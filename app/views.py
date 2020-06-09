@@ -1,12 +1,17 @@
-from flask import jsonify #serializar objetos
+# from flask import jsonify #serializar objetos
 from flask import Blueprint
+
+from .responses import response
 
 api_v1 = Blueprint('api',__name__,url_prefix='/api/v1')
 
 @api_v1.route('/tasks',methods=['GET'])
 def get_tasks():
-    return jsonify({
-        'message':'Hola desde el EndPoint- Listado de Tareas'
+    # return jsonify({
+    #     'message':'Hola desde el EndPoint- Listado de Tareas'
+    # })
+    return response({
+        'mensaje':'Nuevo Mensaje'
     })
 
 @api_v1.route('/tasks/<id>',methods=['GET'])
