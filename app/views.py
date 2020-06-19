@@ -12,7 +12,12 @@ def get_tasks():
     # return jsonify({
     #     'message':'Hola desde el EndPoint- Listado de Tareas'
     # })
-    tasks=Task.query.all() #SELECT * FROM TASKS;
+    page=int(request.args.get('page',1))
+    order=request.args.get('order','desc')
+
+    tasks=Task.get_by_page(order,page)
+
+    # tasks=Task.query.all() #SELECT * FROM TASKS;
     return response(
         [task.serialize() for task in tasks]
     )
