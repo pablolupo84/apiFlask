@@ -78,6 +78,21 @@ class TestAPI (unittest.TestCase):
         title=data['data']['title']
 
         self.assertEqual(title,'Nuevo Yitulo')
+
+    def test_delete_task(self):
+        new_path = self.path + '/1'
+        response = self.client.delete(path=new_path,content_type=self.content_type)
+
+        self.assertEqual(response.status_code,200)
+
+        response = self.client.get(path=new_path,content_type=self.content_type)
+        self.assertEqual(response.status_code,404)
+
+        
+
+        
+
+        
         
 
 if __name__ == '__main__':
