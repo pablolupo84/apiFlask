@@ -7,6 +7,21 @@ from .responses import response,not_found,bad_request
 
 api_v1 = Blueprint('api',__name__,url_prefix='/api/v1')
 
+def set_task(function):
+    def wrap(*args, **kwargs):
+        print("Entramos al Decorador!!!")
+        id=kwargs.get('id',0)
+        task=Task.query.filter_by(id=id).first()
+
+        if task is None:
+            return not_found()
+ 
+        return function(task)
+
+    # Evitamos un assert error ya que no se puede utilziar el mismo decorador varias veces.
+    wrap.__name__=function.__name__
+    return wrap
+
 @api_v1.route('/tasks',methods=['GET'])
 def get_tasks():
     # return jsonify({
@@ -23,12 +38,14 @@ def get_tasks():
     )
 
 @api_v1.route('/tasks/<id>',methods=['GET'])
-def get_task(id):
-    task=Task.query.filter_by(id=id).first()
-    
-    if task is None:
-        return not_found()
 
+# def get_task(id):
+    # task=Task.query.filter_by(id=id).first()
+    
+    # if task is None:
+    #     return not_found()
+@set_task
+def get_task(task):
     return response(task.serialize())
 
 @api_v1.route('/tasks',methods=['POST'])
@@ -50,12 +67,13 @@ def create_task():
     return bad_request()
 
 @api_v1.route('/tasks/<id>',methods=['PUT'])
-def update_task(id):
-    task=Task.query.filter_by(id=id).first()
+# def update_task(id):
+#     task=Task.query.filter_by(id=id).first()
     
-    if task is None:
-        return not_found()
-
+#     if task is None:
+#         return not_found()
+@set_task
+def update_task(task):
     json=request.get_json(force=True)
 
     #se actualizan los campos    
@@ -70,12 +88,13 @@ def update_task(id):
     return bad_request()    
 
 @api_v1.route('/tasks/<id>',methods=['DELETE'])
-def delete_task(id):
-    task=Task.query.filter_by(id=id).first()
+# def delete_task(id):
+#     task=Task.query.filter_by(id=id).first()
     
-    if task is None:
-        return not_found()
-
+#     if task is None:
+#         return not_found()
+@set_task
+def delete_task(task):
     if task.delete():
         return response(task.serialize())
 
