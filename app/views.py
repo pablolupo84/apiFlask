@@ -5,6 +5,8 @@ from flask import Blueprint
 from .models.task import Task
 from .responses import response,not_found,bad_request
 
+from .schemas import task_schema,tasks_schema
+
 api_v1 = Blueprint('api',__name__,url_prefix='/api/v1')
 
 def set_task(function):
@@ -33,9 +35,10 @@ def get_tasks():
     tasks=Task.get_by_page(order,page)
 
     # tasks=Task.query.all() #SELECT * FROM TASKS;
-    return response(
-        [task.serialize() for task in tasks]
-    )
+    # return response(
+    #     [task.serialize() for task in tasks]
+    # )
+    return response(tasks_schema.dump(tasks))
 
 @api_v1.route('/tasks/<id>',methods=['GET'])
 
@@ -46,7 +49,8 @@ def get_tasks():
     #     return not_found()
 @set_task
 def get_task(task):
-    return response(task.serialize())
+    # return response(task.serialize())
+    return response(task_schema.dump(task))
 
 @api_v1.route('/tasks',methods=['POST'])
 def create_task():
@@ -62,8 +66,8 @@ def create_task():
     task=Task.new(json['title'],json['description'],json['deadline'])
 
     if task.save():
-        return response(task.serialize())
-    
+        # return response(task.serialize())
+        return response(task_schema.dump(task))
     return bad_request()
 
 @api_v1.route('/tasks/<id>',methods=['PUT'])
@@ -83,7 +87,8 @@ def update_task(task):
 
     #Persistimos los cambios 
     if task.save():
-        return response(task.serialize())
+        # return response(task.serialize())
+        return response(task_schema.dump(task))
 
     return bad_request()    
 
@@ -96,6 +101,7 @@ def update_task(task):
 @set_task
 def delete_task(task):
     if task.delete():
-        return response(task.serialize())
+        # return response(task.serialize())
+        return response(task_schema.dump(task))
 
     return bad_request()
