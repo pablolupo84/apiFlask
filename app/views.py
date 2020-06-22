@@ -5,7 +5,9 @@ from flask import Blueprint
 from .models.task import Task
 from .responses import response,not_found,bad_request
 
-from .schemas import task_schema,tasks_schema
+from .schemas import task_schema
+from .schemas import tasks_schema
+from .schemas import params_task_schema
 
 api_v1 = Blueprint('api',__name__,url_prefix='/api/v1')
 
@@ -56,12 +58,17 @@ def get_task(task):
 def create_task():
     json = request.get_json(force=True)
 
-    if json.get('title') is None or len(json['title'])>50:
-        return bad_request()
-    if json.get('description') is None :
-        return bad_request()
-    if json.get('deadline') is None :
-        return bad_request()
+    # if json.get('title') is None or len(json['title'])>50:
+    #     return bad_request()
+    # if json.get('description') is None :
+    #     return bad_request()
+    # if json.get('deadline') is None :
+    #     return bad_request()
+
+    error=params_task_schema.validate(json)
+    if error:
+        print(error)
+        return bad_request(message_error=error)
 
     task=Task.new(json['title'],json['description'],json['deadline'])
 
